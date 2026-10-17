@@ -1,0 +1,6 @@
+{
+  "name": "Global Market Intelligence Dashboard",
+  "description": "Bloomberg-style AI market intelligence platform with real-time global markets, Gemini-powered deep stock analysis, interactive technical charts, live news sentiment, scanner, and portfolio tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
