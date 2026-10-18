@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MarketAsset, AssetClass, Region } from '../types/market.ts';
 import { VolatilityHeatmap } from './VolatilityHeatmap.tsx';
+import { exportAssetsToCsv } from '../utils/csvExport.ts';
 import { 
   Sparkles, 
   TrendingUp, 
@@ -13,7 +14,9 @@ import {
   Filter, 
   Eye,
   Table,
-  Flame
+  Flame,
+  Download,
+  ShieldCheck
 } from 'lucide-react';
 
 interface WatchlistViewProps {
@@ -23,6 +26,7 @@ interface WatchlistViewProps {
   onOpenAlertModal: (symbol: string, currentPrice: number) => void;
   onRemoveFromWatchlist: (symbol: string) => void;
   onAddNewAsset: (asset: MarketAsset) => void;
+  onOpenSmartMoney?: (symbol: string) => void;
 }
 
 export const WatchlistView: React.FC<WatchlistViewProps> = ({
@@ -32,6 +36,7 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
   onOpenAlertModal,
   onRemoveFromWatchlist,
   onAddNewAsset,
+  onOpenSmartMoney,
 }) => {
   const [filterClass, setFilterClass] = useState<string>('all');
   const [displayMode, setDisplayMode] = useState<'table' | 'heatmap'>('table');
@@ -152,8 +157,17 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
           </div>
 
           <button
+            onClick={() => exportAssetsToCsv(sorted, `watchlist_${filterClass}`)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 text-xs font-mono font-bold rounded-lg transition shadow cursor-pointer"
+            title="Download current watchlist as CSV"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Export CSV</span>
+          </button>
+
+          <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-mono font-bold rounded-lg transition shadow"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-mono font-bold rounded-lg transition shadow cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" /> Add Ticker
           </button>
@@ -308,31 +322,40 @@ export const WatchlistView: React.FC<WatchlistViewProps> = ({
                     {/* Terminal Action Buttons */}
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
+                        {onOpenSmartMoney && (
+                          <button
+                            onClick={() => onOpenSmartMoney(asset.symbol)}
+                            title="Inspect Smart Money Flow & Whales"
+                            className="p-1.5 rounded-lg bg-emerald-600/15 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 transition cursor-pointer"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                         <button
                           onClick={() => onAnalyzeStock(asset.symbol)}
                           title="Run Gemini AI Deep-Dive"
-                          className="p-1.5 rounded-lg bg-blue-600/15 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/30 transition"
+                          className="p-1.5 rounded-lg bg-blue-600/15 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/30 transition cursor-pointer"
                         >
                           <Sparkles className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => onSelectAsset(asset.symbol)}
                           title="Open Chart & Indicators"
-                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
+                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition cursor-pointer"
                         >
                           <BarChart2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => onOpenAlertModal(asset.symbol, asset.price)}
                           title="Set Price/RSI Alert"
-                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-amber-600/20 text-slate-400 hover:text-amber-400 transition"
+                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-amber-600/20 text-slate-400 hover:text-amber-400 transition cursor-pointer"
                         >
                           <Bell className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => onRemoveFromWatchlist(asset.symbol)}
                           title="Remove from Watchlist"
-                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-600/20 text-slate-500 hover:text-rose-400 transition"
+                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-600/20 text-slate-500 hover:text-rose-400 transition cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
