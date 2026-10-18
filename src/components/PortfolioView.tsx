@@ -96,10 +96,17 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
           totalValue,
         }),
       });
-      const data: PortfolioReview = await res.json();
-      setReview(data);
+      if (res.ok) {
+        const ct = res.headers.get('content-type') || '';
+        if (ct.includes('application/json')) {
+          const data: PortfolioReview = await res.json();
+          setReview(data);
+          return;
+        }
+      }
+      throw new Error(`API returned status ${res.status}`);
     } catch (err) {
-      console.error('Portfolio review error:', err);
+      console.warn('Portfolio review fallback:', err);
     } finally {
       setIsReviewing(false);
     }

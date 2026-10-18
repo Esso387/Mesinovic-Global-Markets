@@ -15,6 +15,17 @@ const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json());
 
+// Health check endpoint for platform & container monitoring
+app.get('/api/health', (_req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'ok',
+    uptime: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+    service: 'Global Market Intelligence Terminal API',
+    geminiConfigured: !!(process.env.GEMINI_API_KEY),
+  });
+});
+
 // Initialize Gemini client strictly adhering to @google/genai guidelines
 const apiKey = process.env.GEMINI_API_KEY || '';
 const ai = new GoogleGenAI({
@@ -1107,6 +1118,11 @@ app.get('/api/market/status', (_req: Request, res: Response) => {
       },
     ],
   });
+});
+
+// JSON 404 handler for unknown API routes
+app.all('/api/*', (req: Request, res: Response) => {
+  res.status(404).json({ error: `Cannot ${req.method} ${req.path}` });
 });
 
 // Configure Vite middleware in development or serve static in production

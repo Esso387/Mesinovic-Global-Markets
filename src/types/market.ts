@@ -26,6 +26,13 @@ export interface MarketAsset {
   rsi?: number;
   sector?: string;
   sparkline: number[];
+  // Real-Time Tick & Day-Over-Day (DoD) Comparison Metrics
+  dayOverDayChange?: number;
+  dayOverDayPercent?: number;
+  lastTickDelta?: number;
+  lastTickPercent?: number;
+  tickFlash?: 'up' | 'down' | null;
+  priorDayClose?: number;
 }
 
 export interface Candle {
